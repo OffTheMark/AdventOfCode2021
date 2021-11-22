@@ -14,7 +14,9 @@ struct Day1: DayCommand {
     var puzzleInputPath: String
     
     func run() throws {
+        let lines = try readLines()
         
+        // TODO: Complete day 1 part 1
     }
 }
 
