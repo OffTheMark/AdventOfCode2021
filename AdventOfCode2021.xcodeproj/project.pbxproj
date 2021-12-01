@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		34C9DA07274C4EC400ACB703 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9DA06274C4EC400ACB703 /* main.swift */; };
 		34C9DA0E274C4F9200ACB703 /* AdventOfCodeUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = 34C9DA0D274C4F9200ACB703 /* AdventOfCodeUtilities */; };
+		34E9B77A2757B6F200087D5F /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 34E9B7792757B6F200087D5F /* Algorithms */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,6 +28,7 @@
 		34C9DA04274C4EC400ACB703 /* Day1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day1; sourceTree = BUILT_PRODUCTS_DIR; };
 		34C9DA06274C4EC400ACB703 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		34C9DA0B274C4EE800ACB703 /* puzzle_input.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = puzzle_input.txt; sourceTree = "<group>"; };
+		34E9B77B2757B7A700087D5F /* test_input.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = test_input.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -34,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34E9B77A2757B6F200087D5F /* Algorithms in Frameworks */,
 				34C9DA0E274C4F9200ACB703 /* AdventOfCodeUtilities in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,6 +66,7 @@
 			children = (
 				34C9DA06274C4EC400ACB703 /* main.swift */,
 				34C9DA0B274C4EE800ACB703 /* puzzle_input.txt */,
+				34E9B77B2757B7A700087D5F /* test_input.txt */,
 			);
 			path = Day1;
 			sourceTree = "<group>";
@@ -92,6 +96,7 @@
 			name = Day1;
 			packageProductDependencies = (
 				34C9DA0D274C4F9200ACB703 /* AdventOfCodeUtilities */,
+				34E9B7792757B6F200087D5F /* Algorithms */,
 			);
 			productName = Day1;
 			productReference = 34C9DA04274C4EC400ACB703 /* Day1 */;
@@ -335,6 +340,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 34C9D9FD274C4EBB00ACB703 /* XCRemoteSwiftPackageReference "AdventOfCodeUtilities" */;
 			productName = AdventOfCodeUtilities;
+		};
+		34E9B7792757B6F200087D5F /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34C9D9F3274C4E2700ACB703 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
