@@ -23,7 +23,7 @@ struct Day1: DayCommand {
         
         let numberOfWindowIncreases = part2(with: measurements)
         printTitle("Part 2", level: .title1)
-        print("Number of increases", numberOfWindowIncreases)
+        print("Number of increases:", numberOfWindowIncreases)
     }
     
     func part1(with measurements: [Int]) -> Int {
