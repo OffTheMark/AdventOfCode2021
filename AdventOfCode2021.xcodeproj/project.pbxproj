@@ -15,6 +15,10 @@
 		34E9B78C2758FFB000087D5F /* AdventOfCodeUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = 34E9B78B2758FFB000087D5F /* AdventOfCodeUtilities */; };
 		34E9B794275A53B400087D5F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E9B793275A53B400087D5F /* main.swift */; };
 		34E9B79B275A541D00087D5F /* AdventOfCodeUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = 34E9B79A275A541D00087D5F /* AdventOfCodeUtilities */; };
+		34E9B7A3275BB7C800087D5F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E9B7A2275BB7C800087D5F /* main.swift */; };
+		34E9B7A8275BB7D500087D5F /* BingoBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E9B7A7275BB7D500087D5F /* BingoBoard.swift */; };
+		34E9B7AC275BBF1800087D5F /* AdventOfCodeUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = 34E9B7AB275BBF1800087D5F /* AdventOfCodeUtilities */; };
+		34E9B7AE275BBF1D00087D5F /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 34E9B7AD275BBF1D00087D5F /* Algorithms */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,6 +49,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		34E9B79E275BB7C800087D5F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +74,11 @@
 		34E9B793275A53B400087D5F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		34E9B798275A53E900087D5F /* puzzle_input.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = puzzle_input.txt; sourceTree = "<group>"; };
 		34E9B799275A53F200087D5F /* test_input.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = test_input.txt; sourceTree = "<group>"; };
+		34E9B7A0275BB7C800087D5F /* Day4 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day4; sourceTree = BUILT_PRODUCTS_DIR; };
+		34E9B7A2275BB7C800087D5F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		34E9B7A7275BB7D500087D5F /* BingoBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoBoard.swift; sourceTree = "<group>"; };
+		34E9B7A9275BBCD200087D5F /* test_input.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = test_input.txt; sourceTree = "<group>"; };
+		34E9B7AA275BBCED00087D5F /* puzzle_input.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = puzzle_input.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +107,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		34E9B79D275BB7C800087D5F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34E9B7AE275BBF1D00087D5F /* Algorithms in Frameworks */,
+				34E9B7AC275BBF1800087D5F /* AdventOfCodeUtilities in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -98,6 +125,7 @@
 				34C9DA05274C4EC400ACB703 /* Day1 */,
 				34E9B7812758FD8700087D5F /* Day2 */,
 				34E9B792275A53B400087D5F /* Day3 */,
+				34E9B7A1275BB7C800087D5F /* Day4 */,
 				34C9D9EA274C4D0700ACB703 /* Products */,
 				34C9DA0C274C4F9200ACB703 /* Frameworks */,
 			);
@@ -109,6 +137,7 @@
 				34C9DA04274C4EC400ACB703 /* Day1 */,
 				34E9B7802758FD8700087D5F /* Day2 */,
 				34E9B791275A53B400087D5F /* Day3 */,
+				34E9B7A0275BB7C800087D5F /* Day4 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -149,6 +178,17 @@
 				34E9B799275A53F200087D5F /* test_input.txt */,
 			);
 			path = Day3;
+			sourceTree = "<group>";
+		};
+		34E9B7A1275BB7C800087D5F /* Day4 */ = {
+			isa = PBXGroup;
+			children = (
+				34E9B7A2275BB7C800087D5F /* main.swift */,
+				34E9B7A7275BB7D500087D5F /* BingoBoard.swift */,
+				34E9B7A9275BBCD200087D5F /* test_input.txt */,
+				34E9B7AA275BBCED00087D5F /* puzzle_input.txt */,
+			);
+			path = Day4;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,6 +255,27 @@
 			productReference = 34E9B791275A53B400087D5F /* Day3 */;
 			productType = "com.apple.product-type.tool";
 		};
+		34E9B79F275BB7C800087D5F /* Day4 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 34E9B7A6275BB7C800087D5F /* Build configuration list for PBXNativeTarget "Day4" */;
+			buildPhases = (
+				34E9B79C275BB7C800087D5F /* Sources */,
+				34E9B79D275BB7C800087D5F /* Frameworks */,
+				34E9B79E275BB7C800087D5F /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Day4;
+			packageProductDependencies = (
+				34E9B7AB275BBF1800087D5F /* AdventOfCodeUtilities */,
+				34E9B7AD275BBF1D00087D5F /* Algorithms */,
+			);
+			productName = Day4;
+			productReference = 34E9B7A0275BB7C800087D5F /* Day4 */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -232,6 +293,9 @@
 						CreatedOnToolsVersion = 13.1;
 					};
 					34E9B790275A53B400087D5F = {
+						CreatedOnToolsVersion = 13.1;
+					};
+					34E9B79F275BB7C800087D5F = {
 						CreatedOnToolsVersion = 13.1;
 					};
 				};
@@ -257,6 +321,7 @@
 				34C9DA03274C4EC400ACB703 /* Day1 */,
 				34E9B77F2758FD8700087D5F /* Day2 */,
 				34E9B790275A53B400087D5F /* Day3 */,
+				34E9B79F275BB7C800087D5F /* Day4 */,
 			);
 		};
 /* End PBXProject section */
@@ -284,6 +349,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				34E9B794275A53B400087D5F /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		34E9B79C275BB7C800087D5F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34E9B7A8275BB7D500087D5F /* BingoBoard.swift in Sources */,
+				34E9B7A3275BB7C800087D5F /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,6 +533,24 @@
 			};
 			name = Release;
 		};
+		34E9B7A4275BB7C800087D5F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		34E9B7A5275BB7C800087D5F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -494,6 +586,15 @@
 			buildConfigurations = (
 				34E9B795275A53B400087D5F /* Debug */,
 				34E9B796275A53B400087D5F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		34E9B7A6275BB7C800087D5F /* Build configuration list for PBXNativeTarget "Day4" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				34E9B7A4275BB7C800087D5F /* Debug */,
+				34E9B7A5275BB7C800087D5F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -547,6 +648,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 34C9D9FD274C4EBB00ACB703 /* XCRemoteSwiftPackageReference "AdventOfCodeUtilities" */;
 			productName = AdventOfCodeUtilities;
+		};
+		34E9B7AB275BBF1800087D5F /* AdventOfCodeUtilities */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34C9D9FD274C4EBB00ACB703 /* XCRemoteSwiftPackageReference "AdventOfCodeUtilities" */;
+			productName = AdventOfCodeUtilities;
+		};
+		34E9B7AD275BBF1D00087D5F /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34C9D9F3274C4E2700ACB703 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
