@@ -17,11 +17,12 @@ struct Line {
     
     var points: [Point] {
         let length = max(abs(start.x - end.x), abs(start.y - end.y))
-        let slope = Point(x: (end.x - start.x).signum(), y: (end.y - start.y).signum())
+        let slope = Point(
+            x: (end.x - start.x).signum(),
+            y: (end.y - start.y).signum()
+        )
         
-        return (0...length).map({
-            $0 * slope + start
-        })
+        return (0...length).map({ $0 * slope + start })
     }
 }
 
