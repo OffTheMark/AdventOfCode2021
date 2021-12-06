@@ -17,33 +17,36 @@ struct Day6: DayCommand {
         let fishes = try readFile()
             .components(separatedBy: ",")
             .compactMap({ rawValue in
-                Int(rawValue).flatMap(Lanternfish.init)
+                Int(rawValue)
             })
         
         let numberOfFishesAfter80Days = iterate(fishes: fishes, numberOfDays: 80)
         printTitle("Part 1", level: .title1)
         print("Number of fishes:", numberOfFishesAfter80Days, terminator: "\n\n")
+        
+        let numberOfFishesAfter256Days = iterate(fishes: fishes, numberOfDays: 256)
+        printTitle("Part 2", level: .title1)
+        print("Number of fishes:", numberOfFishesAfter256Days)
     }
     
-    func iterate(fishes: [Lanternfish], numberOfDays: Int) -> Int {
-        var fishes = fishes
-        
-        for _ in 0 ..< numberOfDays {
-            var numberOfNewFishes = 0
-            
-            for index in fishes.indices {
-                let result = fishes[index].iterate()
-                
-                if result == .create {
-                    numberOfNewFishes += 1
-                }
-            }
-            
-            let newFishes = Array<Lanternfish>(repeating: Lanternfish(timer: 8), count: numberOfNewFishes)
-            fishes.append(contentsOf: newFishes)
+    func iterate(fishes: [Int], numberOfDays: Int) -> Int {
+        var countByTimer = Array(repeating: 0, count: 9)
+        for fish in fishes {
+            countByTimer[fish] += 1
         }
         
-        return fishes.count
+        for _ in 0 ..< numberOfDays {
+            let numberOfNewFishes = countByTimer[0]
+            
+            for timer in countByTimer.indices.dropLast() {
+                countByTimer[timer] = countByTimer[timer + 1]
+            }
+            
+            countByTimer[6] += numberOfNewFishes
+            countByTimer[8] = numberOfNewFishes
+        }
+        
+        return countByTimer.reduce(0, +)
     }
 }
 
