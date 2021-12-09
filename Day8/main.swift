@@ -30,9 +30,11 @@ struct Day8: DayCommand {
         let entries = try readLines().compactMap(Entry.init)
         
         let numberOfUniqueDigitsInOutput = part1(entries: entries)
+        printTitle("Part 1", level: .title1)
         print("Number of digits 1, 4, 7 and 8 in output:", numberOfUniqueDigitsInOutput, terminator: "\n\n")
         
         let sumOfOutputValues = part2(entries: entries)
+        printTitle("Part 2", level: .title1)
         print("Sum of output values:", sumOfOutputValues)
     }
     
