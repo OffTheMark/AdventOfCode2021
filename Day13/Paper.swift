@@ -49,7 +49,7 @@ extension Paper: CustomStringConvertible {
                         return "#"
                     }
                     else {
-                        return "."
+                        return " "
                     }
                 })
             )
