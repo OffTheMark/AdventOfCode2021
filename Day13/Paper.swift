@@ -11,24 +11,23 @@ struct Paper {
     private(set) var points: Set<Point>
     
     mutating func apply(_ fold: Fold) {
+        let coordinatePath: WritableKeyPath<Point, Int>
+        let value: Int
         switch fold {
-        case .alongX(let value):
-            let foldingPoints = points.filter({ $0.x > value })
-            
-            for var foldingPoint in foldingPoints {
-                points.remove(foldingPoint)
-                foldingPoint.x = value - (foldingPoint.x - value)
-                points.insert(foldingPoint)
-            }
-            
-        case .alongY(let value):
-            let foldingPoints = points.filter({ $0.y > value })
-            
-            for var foldingPoint in foldingPoints {
-                points.remove(foldingPoint)
-                foldingPoint.y = value - (foldingPoint.y - value)
-                points.insert(foldingPoint)
-            }
+        case .alongX(let x):
+            coordinatePath = \.x
+            value = x
+        
+        case .alongY(let y):
+            coordinatePath = \.y
+            value = y
+        }
+        
+        let foldingPoints = points.filter({ $0[keyPath: coordinatePath] > value })
+        for var foldingPoint in foldingPoints {
+            points.remove(foldingPoint)
+            foldingPoint[keyPath: coordinatePath] = value - (foldingPoint[keyPath: coordinatePath] - value)
+            points.insert(foldingPoint)
         }
     }
 }
