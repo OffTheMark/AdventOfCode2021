@@ -26,7 +26,7 @@ struct Day13: DayCommand {
         
         let output = part2(paper: paper, folds: folds)
         printTitle("Part 2", level: .title1)
-        print("Activation code:", output, separator: "\n\n")
+        print("Activation code:", output, separator: "\n")
     }
     
     func part1(paper: Paper, fold: Fold) -> Int {
