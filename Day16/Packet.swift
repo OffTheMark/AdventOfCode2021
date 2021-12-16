@@ -19,12 +19,62 @@ struct Packet {
         case .literal:
             return versions
             
-        case .operator(let subpackets):
+        case .operator(_, let subpackets):
             let subpacketVersions = subpackets.flatMap({ $0.allVersions })
             versions.append(contentsOf: subpacketVersions)
         }
         
         return versions
+    }
+    
+    var value: Int {
+        switch packetType {
+        case .literal(let value):
+            return value
+            
+        case .operator(let operation, let subpackets):
+            switch operation {
+            case .sum:
+                return subpackets.reduce(0, { result, subpacket in
+                    result + subpacket.value
+                })
+                
+            case .product:
+                return subpackets.reduce(1, { result, subpacket in
+                    result * subpacket.value
+                })
+                
+            case .minimum:
+                return subpackets.map(\.value).min()!
+                
+            case .maximum:
+                return subpackets.map(\.value).max()!
+                
+            case .greaterThan:
+                if subpackets[0].value > subpackets[1].value {
+                    return 1
+                }
+                else {
+                    return 0
+                }
+                
+            case .lessThan:
+                if subpackets[0].value < subpackets[1].value {
+                    return 1
+                }
+                else {
+                    return 0
+                }
+                
+            case .equalTo:
+                if subpackets[0].value == subpackets[1].value {
+                    return 1
+                }
+                else {
+                    return 0
+                }
+            }
+        }
     }
     
     struct Hexadecimal {
@@ -48,8 +98,18 @@ struct Packet {
     }
     
     enum PacketType {
-        case literal(Int)
-        case `operator`([Packet])
+        case literal(value: Int)
+        case `operator`(operation: Operation, subpackets: [Packet])
+    }
+    
+    enum Operation: Int {
+        case sum = 0
+        case product = 1
+        case minimum = 2
+        case maximum = 3
+        case greaterThan = 5
+        case lessThan = 6
+        case equalTo = 7
     }
 }
 
@@ -97,9 +157,13 @@ extension Packet {
                     
             let value = Int(String(bitsOfLiteral), radix: 2)!
     
-            packetType = .literal(value)
+            packetType = .literal(value: value)
             
         default:
+            guard let operation = Packet.Operation(rawValue: typeID) else {
+                fatalError("Invalid type ID")
+            }
+                        
             let lengthTypeID = Int(String(rawValue[currentIndex]), radix: 2)!
             
             totalOffset += 1
@@ -149,7 +213,7 @@ extension Packet {
                 fatalError("Invalid length type ID")
             }
             
-            packetType = .operator(subpackets)
+            packetType = .operator(operation: operation, subpackets: subpackets)
             break
         }
         
