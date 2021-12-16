@@ -111,6 +111,11 @@ struct Packet {
         case lessThan = 6
         case equalTo = 7
     }
+    
+    enum LengthType: Int {
+        case numberOfBits = 0
+        case numberOfSubpackets = 1
+    }
 }
 
 extension Packet {
@@ -120,8 +125,7 @@ extension Packet {
         self = packet
     }
     
-    private static func packet(rawValue: String, startIndex: String.Index) throws -> (packet: Packet, offset: Int) {
-        var totalOffset = 3
+    private static func packet(rawValue: String, startIndex: String.Index) throws -> (packet: Packet, endIndex: String.Index) {
         var currentIndex = startIndex
         
         let version = Int(
@@ -130,7 +134,6 @@ extension Packet {
         )!
     
         currentIndex = rawValue.index(currentIndex, offsetBy: 3)
-        totalOffset += 3
         
         let typeID = Int(
             rawValue[currentIndex ..< rawValue.index(currentIndex, offsetBy: 3)],
@@ -151,12 +154,10 @@ extension Packet {
                 bitsOfLiteral.append(contentsOf: currentFiveBits.dropFirst())
                 
                 currentIndex = rawValue.index(currentIndex, offsetBy: 5)
-                totalOffset += 5
             }
             while currentFiveBits.first == "1"
                     
             let value = Int(String(bitsOfLiteral), radix: 2)!
-    
             packetType = .literal(value: value)
             
         default:
@@ -166,51 +167,46 @@ extension Packet {
                         
             let lengthTypeID = Int(String(rawValue[currentIndex]), radix: 2)!
             
-            totalOffset += 1
             currentIndex = rawValue.index(currentIndex, offsetBy: 1)
             
             var subpackets = [Packet]()
-            switch lengthTypeID {
-            case 0:
+            guard let lengthType = LengthType(rawValue: lengthTypeID) else {
+                throw ParsingError.invalidLengthTypeID(lengthTypeID: lengthTypeID)
+            }
+            
+            switch lengthType {
+            case .numberOfBits:
                 let lengthInBitsOfSubpackets = Int(
                     rawValue[currentIndex ..< rawValue.index(currentIndex, offsetBy: 15)],
                     radix: 2
                 )!
                 
-                totalOffset += 15
                 currentIndex = rawValue.index(currentIndex, offsetBy: 15)
                 
                 var consumedBits = 0
                 
                 while consumedBits < lengthInBitsOfSubpackets {
-                    let (subpacket, offset) = try packet(rawValue: rawValue, startIndex: currentIndex)
+                    let (subpacket, endIndex) = try packet(rawValue: rawValue, startIndex: currentIndex)
                     subpackets.append(subpacket)
                     
-                    totalOffset += offset
-                    currentIndex = rawValue.index(currentIndex, offsetBy: offset)
-                    
-                    consumedBits += offset
+                    consumedBits += rawValue.distance(from: currentIndex, to: endIndex)
+                    currentIndex = endIndex
                 }
 
-            case 1:
+            case .numberOfSubpackets:
                 let numberOfSubpackets = Int(
                     rawValue[currentIndex ..< rawValue.index(currentIndex, offsetBy: 11)],
                     radix: 2
                 )!
                 
-                totalOffset += 11
                 currentIndex = rawValue.index(currentIndex, offsetBy: 11)
                 
                 for _ in 0 ..< numberOfSubpackets {
-                    let (subpacket, offset) = try packet(rawValue: rawValue, startIndex: currentIndex)
+                    let (subpacket, endIndex) = try packet(rawValue: rawValue, startIndex: currentIndex)
                     subpackets.append(subpacket)
                     
-                    totalOffset += offset
-                    currentIndex = rawValue.index(currentIndex, offsetBy: offset)
+                    currentIndex = endIndex
                 }
-                
-            default:
-                throw ParsingError.invalidLengthTypeID(lengthTypeID: lengthTypeID)
             }
             
             packetType = .operator(operation: operation, subpackets: subpackets)
@@ -218,7 +214,7 @@ extension Packet {
         }
         
         let packet = Packet(version: version, typeID: typeID, packetType: packetType)
-        return (packet, totalOffset)
+        return (packet, currentIndex)
     }
     
     enum ParsingError: Error {
