@@ -114,13 +114,13 @@ struct Packet {
 }
 
 extension Packet {
-    init(rawValue: String) {
-        let (packet, _) = Self.packet(rawValue: rawValue, startIndex: rawValue.startIndex)
+    init(rawValue: String) throws {
+        let (packet, _) = try Self.packet(rawValue: rawValue, startIndex: rawValue.startIndex)
         
         self = packet
     }
     
-    private static func packet(rawValue: String, startIndex: String.Index) -> (packet: Packet, offset: Int) {
+    private static func packet(rawValue: String, startIndex: String.Index) throws -> (packet: Packet, offset: Int) {
         var totalOffset = 3
         var currentIndex = startIndex
         
@@ -161,7 +161,7 @@ extension Packet {
             
         default:
             guard let operation = Packet.Operation(rawValue: typeID) else {
-                fatalError("Invalid type ID")
+                throw ParsingError.invalidTypeID(typeID: typeID)
             }
                         
             let lengthTypeID = Int(String(rawValue[currentIndex]), radix: 2)!
@@ -183,7 +183,7 @@ extension Packet {
                 var consumedBits = 0
                 
                 while consumedBits < lengthInBitsOfSubpackets {
-                    let (subpacket, offset) = packet(rawValue: rawValue, startIndex: currentIndex)
+                    let (subpacket, offset) = try packet(rawValue: rawValue, startIndex: currentIndex)
                     subpackets.append(subpacket)
                     
                     totalOffset += offset
@@ -202,7 +202,7 @@ extension Packet {
                 currentIndex = rawValue.index(currentIndex, offsetBy: 11)
                 
                 for _ in 0 ..< numberOfSubpackets {
-                    let (subpacket, offset) = packet(rawValue: rawValue, startIndex: currentIndex)
+                    let (subpacket, offset) = try packet(rawValue: rawValue, startIndex: currentIndex)
                     subpackets.append(subpacket)
                     
                     totalOffset += offset
@@ -210,7 +210,7 @@ extension Packet {
                 }
                 
             default:
-                fatalError("Invalid length type ID")
+                throw ParsingError.invalidLengthTypeID(lengthTypeID: lengthTypeID)
             }
             
             packetType = .operator(operation: operation, subpackets: subpackets)
@@ -219,5 +219,10 @@ extension Packet {
         
         let packet = Packet(version: version, typeID: typeID, packetType: packetType)
         return (packet, totalOffset)
+    }
+    
+    enum ParsingError: Error {
+        case invalidTypeID(typeID: Int)
+        case invalidLengthTypeID(lengthTypeID: Int)
     }
 }

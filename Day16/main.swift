@@ -15,7 +15,7 @@ struct Day16: DayCommand {
     
     func run() throws {
         let hexadecimal = Packet.Hexadecimal(rawValue: try readFile())
-        let packet = Packet(rawValue: hexadecimal.binary())
+        let packet = try Packet(rawValue: hexadecimal.binary())
         
         let sumOfVersionNumbers = part1(packet: packet)
         printTitle("Part 1", level: .title1)
