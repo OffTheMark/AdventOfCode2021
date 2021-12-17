@@ -25,6 +25,7 @@
 		34AE979B276CC2980088D43C /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AE979A276CC2980088D43C /* main.swift */; };
 		34AE97A2276CC3FC0088D43C /* AdventOfCodeUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = 34AE97A1276CC3FC0088D43C /* AdventOfCodeUtilities */; };
 		34AE97A4276CC4730088D43C /* Area.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AE97A3276CC4730088D43C /* Area.swift */; };
+		34AE97A7276CDBE70088D43C /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 34AE97A6276CDBE70088D43C /* Algorithms */; };
 		34C9DA07274C4EC400ACB703 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9DA06274C4EC400ACB703 /* main.swift */; };
 		34C9DA0E274C4F9200ACB703 /* AdventOfCodeUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = 34C9DA0D274C4F9200ACB703 /* AdventOfCodeUtilities */; };
 		34E9B77A2757B6F200087D5F /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 34E9B7792757B6F200087D5F /* Algorithms */; };
@@ -353,6 +354,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34AE97A7276CDBE70088D43C /* Algorithms in Frameworks */,
 				34AE97A2276CC3FC0088D43C /* AdventOfCodeUtilities in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -809,6 +811,7 @@
 			name = Day17;
 			packageProductDependencies = (
 				34AE97A1276CC3FC0088D43C /* AdventOfCodeUtilities */,
+				34AE97A6276CDBE70088D43C /* Algorithms */,
 			);
 			productName = Day17;
 			productReference = 34AE9798276CC2980088D43C /* Day17 */;
@@ -1967,6 +1970,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 34C9D9FD274C4EBB00ACB703 /* XCRemoteSwiftPackageReference "AdventOfCodeUtilities" */;
 			productName = AdventOfCodeUtilities;
+		};
+		34AE97A6276CDBE70088D43C /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34C9D9F3274C4E2700ACB703 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
 		};
 		34C9DA0D274C4F9200ACB703 /* AdventOfCodeUtilities */ = {
 			isa = XCSwiftPackageProductDependency;

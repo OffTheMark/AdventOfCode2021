@@ -8,6 +8,7 @@
 import Foundation
 import AdventOfCodeUtilities
 import ArgumentParser
+import Algorithms
 
 struct Day17: DayCommand {
     @Argument(help: "Puzzle input path")
@@ -42,7 +43,8 @@ struct Day17: DayCommand {
         
         // We consider the Y velocities ranging from the lower bound to the inverse of the lower bound for y
         // coordinates.
-        let yVelocities = area.yRange.lowerBound ..< -area.yRange.lowerBound
+        let (minimumYVelocity, maximumYVelocity) = [area.yRange.lowerBound, -area.yRange.lowerBound].minAndMax()!
+        let yVelocities = minimumYVelocity ..< maximumYVelocity
         
         var highestY = 0
         var successfulInitialVelocities = Set<Velocity>()
