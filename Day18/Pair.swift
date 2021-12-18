@@ -7,31 +7,6 @@
 
 import Foundation
 
-enum NumberElement {
-    case value(Int)
-    indirect case pair([NumberElement])
-}
-
-extension NumberElement: Decodable {
-    init(from decoder: Decoder) throws {
-        do {
-            var unkeyedContainer = try decoder.unkeyedContainer()
-            var elements = [NumberElement]()
-            while !unkeyedContainer.isAtEnd {
-                let element = try unkeyedContainer.decode(NumberElement.self)
-                elements.append(element)
-            }
-            
-            self = .pair(elements)
-        }
-        catch {
-            let singleValueContainer = try decoder.singleValueContainer()
-            let value = try singleValueContainer.decode(Int.self)
-            self = .value(value)
-        }
-    }
-}
-
 struct Pair {
     var left: Element
     var right: Element
@@ -132,15 +107,15 @@ func add(_ lhs: Pair, _ rhs: Pair) throws -> Pair {
     while true {
         let explosionResult = try explode(.pair(result))
         result = try explosionResult.element.requirePair()
-        
-        if explosionResult.exploded {
+
+        if explosionResult.hasExploded {
             continue
         }
-        
+
         let splitResult = split(.pair(result))
         result = try splitResult.element.requirePair()
-        
-        if !splitResult.split {
+
+        if !splitResult.hasSplit {
             break
         }
     }
@@ -151,7 +126,7 @@ func add(_ lhs: Pair, _ rhs: Pair) throws -> Pair {
 func explode(
     _ element: Pair.Element,
     depth: Int = 4
-) throws -> (exploded: Bool, left: Pair.Element?, element: Pair.Element, right: Pair.Element?) {
+) throws -> (hasExploded: Bool, left: Pair.Element?, element: Pair.Element, right: Pair.Element?) {
     switch element {
     case .value:
         return (false, nil, element, nil)
@@ -163,23 +138,25 @@ func explode(
         
         let leftResult = try explode(pair.left, depth: depth - 1)
         
-        if leftResult.exploded {
+        if leftResult.hasExploded {
             let rightValue = try leftResult.right?.requireValue()
             let newPair = Pair(
                 left: leftResult.element,
                 right: addLeft(pair.right, value: rightValue)
             )
+            
             return (true, leftResult.left, .pair(newPair), nil)
         }
         
         let rightResult = try explode(pair.right, depth: depth - 1)
         
-        if rightResult.exploded {
+        if rightResult.hasExploded {
             let leftValue = try rightResult.left?.requireValue()
             let newPair = Pair(
                 left: addRight(leftResult.element, value: leftValue),
                 right: rightResult.element
             )
+            
             return (true, nil, .pair(newPair), rightResult.right)
         }
         
@@ -195,10 +172,15 @@ func addLeft(_ element: Pair.Element, value: Int?) -> Pair.Element {
     switch element {
     case .value(let elementValue):
         let result = elementValue + value
+        
         return .value(result)
         
     case .pair(let pair):
-        let result = Pair(left: addLeft(pair.left, value: value), right: pair.right)
+        let result = Pair(
+            left: addLeft(pair.left, value: value),
+            right: pair.right
+        )
+        
         return .pair(result)
     }
 }
@@ -211,15 +193,20 @@ func addRight(_ element: Pair.Element, value: Int?) -> Pair.Element {
     switch element {
     case .value(let elementValue):
         let result = elementValue + value
+        
         return .value(result)
         
     case .pair(let pair):
-        let result = Pair(left: pair.left, right: addRight(pair.right, value: value))
+        let result = Pair(
+            left: pair.left,
+            right: addRight(pair.right, value: value)
+        )
+        
         return .pair(result)
     }
 }
 
-func split(_ element: Pair.Element) -> (split: Bool, element: Pair.Element) {
+func split(_ element: Pair.Element) -> (hasSplit: Bool, element: Pair.Element) {
     switch element {
     case .value(let value):
         if value >= 10 {
@@ -234,7 +221,7 @@ func split(_ element: Pair.Element) -> (split: Bool, element: Pair.Element) {
         
     case .pair(let pair):
         let leftResult = split(pair.left)
-        if leftResult.split {
+        if leftResult.hasSplit {
             let newPair = Pair(
                 left: leftResult.element,
                 right: pair.right
@@ -249,6 +236,6 @@ func split(_ element: Pair.Element) -> (split: Bool, element: Pair.Element) {
             right: rightResult.element
         )
         
-        return (rightResult.split, .pair(newPair))
+        return (rightResult.hasSplit, .pair(newPair))
     }
 }
