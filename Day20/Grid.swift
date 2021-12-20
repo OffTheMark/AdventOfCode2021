@@ -11,6 +11,8 @@ import Algorithms
 struct Grid {
     var pixelsByPoint: [Point: Pixel]
     var pixelOutside: Pixel = .dark
+    var rangeOfX: ClosedRange<Int>
+    var rangeOfY: ClosedRange<Int>
     
     func numberOfLitPixels() -> Int {
         pixelsByPoint.count(where: { _, pixel in
@@ -33,10 +35,8 @@ struct Grid {
     }
     
     mutating func enhance(using enhancement: Enhancement) {
-        let minAndMaxX = Set(pixelsByPoint.keys.map(\.x)).minAndMax()!
-        let minAndMaxY = Set(pixelsByPoint.keys.map(\.y)).minAndMax()!
-        let rangeOfX = (minAndMaxX.min - 1) ... (minAndMaxX.max + 1)
-        let rangeOfY = (minAndMaxY.min - 1) ... (minAndMaxY.max + 1)
+        let rangeOfX = (rangeOfX.lowerBound - 1) ... (rangeOfX.upperBound + 1)
+        let rangeOfY = (rangeOfY.lowerBound - 1) ... (rangeOfY.upperBound + 1)
         var newPixelsByPoint = [Point: Pixel]()
         
         for (x, y) in product(rangeOfX, rangeOfY) {
@@ -48,12 +48,17 @@ struct Grid {
         self.pixelsByPoint = newPixelsByPoint
         let outsideIndex = Int(pixels: [Pixel](repeating: pixelOutside, count: 9))
         self.pixelOutside = enhancement.pixel(at: outsideIndex)
+        self.rangeOfX = rangeOfX
+        self.rangeOfY = rangeOfY
     }
 }
 
 extension Grid {
     init(rawValue: String) {
         let lines = rawValue.components(separatedBy: .newlines)
+        
+        var maxY = 0
+        var maxX = 0
         self.pixelsByPoint = lines.enumerated()
             .reduce(into: [:], { result, pair in
                 let (y, line) = pair
@@ -65,8 +70,15 @@ extension Grid {
                     
                     let point = Point(x: x, y: y)
                     result[point] = pixel
+                    
+                    maxX = max(maxX, x)
                 }
+                
+                maxY = max(maxY, y)
             })
+        
+        self.rangeOfX = 0 ... maxX
+        self.rangeOfY = 0 ... maxY
     }
 }
 
