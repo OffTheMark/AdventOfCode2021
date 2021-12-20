@@ -6,41 +6,93 @@
 //
 
 import Foundation
+import Algorithms
 
-struct Point3D {
-    var x: Double
-    var y: Double
-    var z: Double
+struct Scanner {
+    var beacons: Set<Point3D>
     
-    private var rows: [[Double]] {
-        [[x], [y], [z], [1]]
-    }
-    
-    static let zero = Point3D(x: 0, y: 0, z: 0)
-    
-    func applying(_ transform: Transform3D) -> Point3D {
-        var result = self
-        result.apply(transform)
+    func transformations() -> [Scanner] {
+        var result = Array<Scanner>(repeating: Scanner(beacons: []), count: 24)
+        
+        for beacon in beacons {
+            let transformations = beacon.transformations()
+            
+            for index in transformations.indices {
+                result[index].beacons.insert(transformations[index])
+            }
+        }
+        
         return result
     }
     
-    mutating func apply(_ transform: Transform3D) {
-        let rows = rows
-        let indices = 0 ..< 4
+    func translation(to peer: Scanner) -> Point3D? {
+        var countByDifference = [Point3D: Int]()
         
-        let newX: Double = indices.reduce(into: 0, { result, index in
-            result += transform.rows[0][index] * rows[index][0]
-        })
-        let newY: Double = indices.reduce(into: 0, { result, index in
-            result += transform.rows[1][index] * rows[index][0]
-        })
-        let newZ: Double = indices.reduce(into: 0, { result, index in
-            result += transform.rows[2][index] * rows[index][0]
-        })
+        for (beacon, peerBeacon) in product(beacons, peer.beacons) {
+            let difference = beacon - peerBeacon
+            countByDifference[difference, default: 0] += 1
+        }
         
-        self.x = newX
-        self.y = newY
-        self.z = newZ
+        return countByDifference.first(where: { $0.value >= 12 })?.key
+    }
+}
+
+extension Scanner {
+    init(rawValue: String) {
+        let beaconRawValues = rawValue
+            .components(separatedBy: .newlines)
+            .dropFirst()
+        
+        self.beacons = Set(beaconRawValues.compactMap(Point3D.init))
+    }
+}
+
+struct Point3D {
+    var x: Int
+    var y: Int
+    var z: Int
+    
+    func rolled() -> Point3D {
+        Point3D(x: x, y: z, z: -y)
+    }
+    
+    func turned() -> Point3D {
+        Point3D(x: -y, y: x, z: z)
+    }
+    
+    func transformations() -> [Point3D] {
+        var result = [Point3D]()
+        var current = self
+        
+        for _ in 0 ..< 2 {
+            for _ in 0 ..< 3 {
+                current = current.rolled()
+                result.append(current)
+                
+                for _ in 0 ..< 3 {
+                    current = current.turned()
+                    result.append(current)
+                }
+            }
+            
+            current = current.rolled().turned().rolled()
+        }
+        
+        return result
+    }
+}
+
+extension Point3D {
+    init?(rawValue: String) {
+        let parts = rawValue.components(separatedBy: ",").compactMap(Int.init)
+        
+        guard parts.count == 3 else {
+            return nil
+        }
+        
+        self.x = parts[0]
+        self.y = parts[1]
+        self.z = parts[2]
     }
 }
 
@@ -50,94 +102,12 @@ extension Point3D {
     static prefix func -(point: Point3D) -> Point3D {
         Point3D(x: -point.x, y: -point.y, z: -point.z)
     }
-}
-
-struct Transform3D {
-    var rows: [[Double]]
     
-    static let identity = Transform3D(
-        rows: [
-            [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1]
-        ]
-    )
-    
-    func product(_ other: Transform3D) -> Transform3D {
-        func result(row: Int, column: Int) -> Double {
-            let indices = 0 ..< 4
-            
-            return indices.reduce(into: 0, { result, index in
-                result += self.rows[row][index] * other.rows[index][column]
-            })
-        }
-        
-        let rows = 0 ..< 4
-        let columns = 0 ..< 4
-        
-        return Transform3D(
-            rows: rows.map({ row in
-                columns.map({ column in
-                    result(row: row, column: column)
-                })
-            })
-        )
+    static func -(lhs: Point3D, rhs: Point3D) -> Point3D {
+        Point3D(x: lhs.x - rhs.x, y: lhs.y - rhs.y, z: lhs.z - rhs.z)
     }
     
-    static func rotationAroundXAxis(by angle: Measurement<UnitAngle>) -> Transform3D {
-        let radians = angle.converted(to: .radians)
-        let sine = sin(radians.value)
-        let cosine = cos(radians.value)
-        
-        return Transform3D(
-            rows: [
-                [1, 0, 0, 0],
-                [0, cosine, -sine, 0],
-                [0, sine, cosine, 0],
-                [0, 0, 0, 1]
-            ]
-        )
-    }
-    
-    static func rotationAroundYAxis(by angle: Measurement<UnitAngle>) -> Transform3D {
-        let radians = angle.converted(to: .radians)
-        let sine = sin(radians.value)
-        let cosine = cos(radians.value)
-        
-        return Transform3D(
-            rows: [
-                [cosine, 0, sine, 0],
-                [0, 1, 0, 0],
-                [-sine, 0, cosine, 0],
-                [0, 0, 0, 1]
-            ]
-        )
-    }
-    
-    static func rotationAroundZAxis(by angle: Measurement<UnitAngle>) -> Transform3D {
-        let radians = angle.converted(to: .radians)
-        let sine = sin(radians.value)
-        let cosine = cos(radians.value)
-        
-        return Transform3D(
-            rows: [
-                [cosine, -sine, 0, 0],
-                [sine, cosine, 0, 0],
-                [0, 0, 1, 0],
-                [0, 0, 0, 1]
-            ]
-        )
-    }
-    
-    static func translation(to point: Point3D) -> Transform3D {
-        Transform3D(
-            rows: [
-                [1, 0, 0, point.x],
-                [0, 1, 0, point.y],
-                [0, 0, 1, point.z],
-                [0, 0, 0, 1]
-            ]
-        )
+    static func +(lhs: Point3D, rhs: Point3D) -> Point3D {
+        Point3D(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
     }
 }

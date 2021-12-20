@@ -52,7 +52,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "$PROJECT_DIR/Day19/test_input.txt"
+            argument = "$PROJECT_DIR/Day19/puzzle_input.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
