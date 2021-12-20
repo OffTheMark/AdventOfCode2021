@@ -19,13 +19,26 @@ struct Day20: DayCommand {
         let grid = Grid(rawValue: parts[1])
         
         printTitle("Part 1", level: .title1)
-        let enhancedGrid = part1(grid: grid, enhancement: enhancement)
-        print("Number of lit pixels:", enhancedGrid.numberOfLitPixels(), terminator: "\n\n")
+        let gridEnhancedTwice = part1(grid: grid, enhancement: enhancement)
+        print("Number of lit pixels after 2 enhancements:", gridEnhancedTwice.numberOfLitPixels(), terminator: "\n\n")
+        
+        printTitle("Part 2", level: .title1)
+        let gridEnhanced50Times = part2(grid: grid, enhancement: enhancement)
+        print("Number of lit pixels after 50 enhancements:", gridEnhanced50Times.numberOfLitPixels())
     }
     
     func part1(grid: Grid, enhancement: Enhancement) -> Grid {
         var grid = grid
         for _ in 0 ..< 2 {
+            grid.enhance(using: enhancement)
+        }
+        
+        return grid
+    }
+    
+    func part2(grid: Grid, enhancement: Enhancement) -> Grid {
+        var grid = grid
+        for step in 0 ..< 50 {
             grid.enhance(using: enhancement)
         }
         
