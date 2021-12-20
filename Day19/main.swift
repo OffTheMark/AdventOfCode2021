@@ -18,9 +18,13 @@ struct Day19: DayCommand {
             .components(separatedBy: "\n\n")
             .map(Scanner.init)
         
-        let (beaconPositions, scannerPositions) = part1(scanners: scanners)
         printTitle("Part 1", level: .title1)
+        let (beaconPositions, scannerPositions) = part1(scanners: scanners)
         print("Number of beacons:", beaconPositions.count, terminator: "\n\n")
+        
+        printTitle("Part 2", level: .title1)
+        let largestDistanceBetweenScanners = part2(scanners: scannerPositions)
+        print("Largest distance between scanners:", largestDistanceBetweenScanners)
     }
     
     func part1(scanners: [Scanner]) -> (beacons: Set<Point3D>, scanners: Set<Point3D>) {
@@ -48,6 +52,15 @@ struct Day19: DayCommand {
         }
         
         return (current.beacons, scannerPositions)
+    }
+    
+    func part2(scanners: Set<Point3D>) -> Int {
+        return scanners
+            .combinations(ofCount: 2)
+            .map({ pair -> Int in
+                pair[0].manhattanDistance(to: pair[1])
+            })
+            .max()!
     }
 }
 

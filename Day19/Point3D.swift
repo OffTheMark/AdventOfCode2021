@@ -52,6 +52,10 @@ struct Point3D {
     var y: Int
     var z: Int
     
+    func manhattanDistance(to other: Point3D) -> Int {
+        abs(other.x - x) + abs(other.y - y) + abs(other.z - z)
+    }
+    
     func rolled() -> Point3D {
         Point3D(x: x, y: z, z: -y)
     }
