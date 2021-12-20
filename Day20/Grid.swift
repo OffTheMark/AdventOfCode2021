@@ -37,19 +37,23 @@ struct Grid {
     mutating func enhance(using enhancement: Enhancement) {
         let rangeOfX = (rangeOfX.lowerBound - 1) ... (rangeOfX.upperBound + 1)
         let rangeOfY = (rangeOfY.lowerBound - 1) ... (rangeOfY.upperBound + 1)
-        var newPixelsByPoint = [Point: Pixel]()
+        let width = abs(rangeOfX.upperBound - rangeOfY.lowerBound)
+        let height = abs(rangeOfY.upperBound - rangeOfY.lowerBound)
         
-        for (x, y) in product(rangeOfX, rangeOfY) {
-            let point = Point(x: x, y: y)
-            let enhancementIndex = enhancementIndex(for: point)
-            newPixelsByPoint[point] = enhancement.pixel(at: enhancementIndex)
-        }
+        let newPixelsByPoint: [Point: Pixel] = product(rangeOfX, rangeOfY)
+            .reduce(into: [Point: Pixel](minimumCapacity: width * height), { result, pair in
+                let (x, y) = pair
+                let point = Point(x: x, y: y)
+                let enhancementIndex = enhancementIndex(for: point)
+                result[point] = enhancement.pixel(at: enhancementIndex)
+            })
         
-        self.pixelsByPoint = newPixelsByPoint
-        let outsideIndex = Int(pixels: [Pixel](repeating: pixelOutside, count: 9))
-        self.pixelOutside = enhancement.pixel(at: outsideIndex)
         self.rangeOfX = rangeOfX
         self.rangeOfY = rangeOfY
+        self.pixelsByPoint = newPixelsByPoint
+        
+        let outsideIndex = Int(pixels: [Pixel](repeating: pixelOutside, count: 9))
+        self.pixelOutside = enhancement.pixel(at: outsideIndex)
     }
 }
 
