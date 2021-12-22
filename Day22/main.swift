@@ -31,60 +31,78 @@ struct Day22: DayCommand {
             rangeOfY: -50 ... 50,
             rangeOfZ: -50 ... 50
         )
+        let signedVolumesByCuboid = signedVolumesByCuboid(steps: steps, bounds: bounds)
         
-        let statesByPoint: [Point3D: CubeState] = steps.reduce(into: [:], { result, step in
-            guard let intersection = step.cuboid.intersection(bounds) else {
-                return
-            }
+        return signedVolumesByCuboid.reduce(into: 0, { result, element in
+            let (cuboid, signedVolume) = element
             
-            intersection.points.forEach({ point in
-                result[point] = step.state
-            })
-        })
-        
-        return statesByPoint.count(where: { _, state in
-            state == .on
+            result += cuboid.cubeCount * signedVolume
         })
     }
     
     func part2(steps: [RebootStep]) -> Int {
-        let signedCountsByCuboid: [Cuboid: Int] = steps.reduce(into: [:], { result, step in
+        let signedVolumesByCuboid = signedVolumesByCuboid(steps: steps)
+        
+        return signedVolumesByCuboid.reduce(into: 0, { result, element in
+            let (cuboid, signedVolume) = element
+            
+            result += cuboid.cubeCount * signedVolume
+        })
+    }
+    
+    func signedVolumesByCuboid(steps: [RebootStep], bounds: Cuboid? = nil) -> [Cuboid: Int] {
+        func stepCuboid(step: RebootStep, bounds: Cuboid?) -> Cuboid? {
+            guard let bounds = bounds else {
+                return step.cuboid
+            }
+            
+            return step.cuboid.intersection(bounds)
+        }
+        
+        let signedVolumesByCuboid: [Cuboid: Int] = steps.reduce(into: [:], { result, step in
+            guard let stepCuboid = stepCuboid(step: step, bounds: bounds) else {
+                return
+            }
+            
             var diff = [Cuboid: Int]()
             var fullyContainedCuboids = Set<Cuboid>()
             
-            for (cuboid, signedCount) in result {
-                if step.cuboid.fullyContains(cuboid) {
+            for (cuboid, signedVolume) in result {
+                if stepCuboid.fullyContains(cuboid) {
                     fullyContainedCuboids.insert(cuboid)
                     continue
                 }
                 
-                if let intersection = step.cuboid.intersection(cuboid) {
-                    diff[intersection, default: 0] -= signedCount
+                // When a new "on" or "off" cuboid comes in, find intersections with the step's cuboid and any
+                // preexisting cuboid. If there are any, add the intersection to the diff with the opposite sign to
+                // cancel it out.
+                if let intersection = stepCuboid.intersection(cuboid) {
+                    diff[intersection, default: 0] -= signedVolume
                 }
             }
             
+            // When a new "on" cuboid comes in, add it the diff with a positive sign.
             if step.state == .on {
-                diff[step.cuboid, default: 0] += 1
+                diff[stepCuboid, default: 0] += 1
             }
             
+            // If the step's cuboid fully contains a preexisting cuboid, we can remove it.
             for cuboid in fullyContainedCuboids {
                 result.removeValue(forKey: cuboid)
             }
             
+            // Apply the signed volume difference to the accumulated result.
             result.merge(diff, uniquingKeysWith: { left, right in
                 left + right
             })
             
-            for (cuboid, count) in result where count == 0 {
+            // Remove all cuboids where the signed volume is zero.
+            for (cuboid, signedVolume) in result where signedVolume == 0 {
                 result.removeValue(forKey: cuboid)
             }
         })
         
-        return signedCountsByCuboid.reduce(into: 0, { result, element in
-            let (cuboid, signedCount) = element
-            
-            result += cuboid.cubeCount * signedCount
-        })
+        return signedVolumesByCuboid
     }
 }
 

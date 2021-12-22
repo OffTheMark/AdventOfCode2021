@@ -52,21 +52,6 @@ struct Cuboid {
         })
     }
     
-    var points: [Point3D] {
-        var points = [Point3D]()
-        
-        for x in rangeOfX {
-            for y in rangeOfY {
-                for z in rangeOfZ {
-                    let point = Point3D(x: x, y: y, z: z)
-                    points.append(point)
-                }
-            }
-        }
-        
-        return points
-    }
-    
     func fullyContains(_ other: Cuboid) -> Bool {
         let keyPaths: [KeyPath<Cuboid, ClosedRange<Int>>] = [\.rangeOfX, \.rangeOfY, \.rangeOfZ]
         
