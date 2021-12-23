@@ -81,7 +81,7 @@ struct Day15: DayCommand {
                 if newRisk < minimumRiskLevelByPoint[neighbor, default: Int.max] {
                     minimumRiskLevelByPoint[neighbor] = newRisk
                     
-                    let path = Path(destination: neighbor,riskLevel: newRisk)
+                    let path = Path(destination: neighbor, riskLevel: newRisk)
                     frontier.insert(path)
                 }
             }
