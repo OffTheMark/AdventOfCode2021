@@ -13,16 +13,16 @@ import Algorithms
 struct Fingerprint {
     var amphipodsByPosition: [Point: Amphipod]
     
-    static let target: Fingerprint = {
+    static func target(ofHeight height: Int) -> Fingerprint {
         let amphipodsByPosition: [Point: Amphipod] = Amphipod.allCases
             .reduce(into: [:], { result, amphipod in
-                for sideRoom in amphipod.sideRooms {
+                for sideRoom in amphipod.sideRooms(ofHeight: height) {
                     result[sideRoom] = amphipod
                 }
             })
         
         return Fingerprint(amphipodsByPosition: amphipodsByPosition)
-    }()
+    }
     
     func isValid(_ path: Path) -> Bool {
         let pointsOfPathExceptStart = path.points().subtracting([path.start])
@@ -30,52 +30,59 @@ struct Fingerprint {
         return pointsOfPathExceptStart.allSatisfy({ amphipodsByPosition[$0] == nil })
     }
     
-    func possiblePaths() -> [Path] {
+    func possiblePaths(using graph: Graph) -> [Path] {
         return amphipodsByPosition.reduce(into: [], { result, pair in
             let (start, amphipod) = pair
             
-            if amphipod.sideRooms.contains(start) {
-                if start.y == 3 {
+            if amphipod.sideRooms(ofHeight: graph.heightOfSideRooms).contains(start) {
+                if start.y == graph.sideRoomRangeOfY.upperBound {
                     return
                 }
                 
-                var pointUnderStart = start
-                pointUnderStart.y += 1
-                let whatsUnder = amphipodsByPosition[pointUnderStart]
+                let whatsUnder: [Amphipod?] = graph.sideRoomRangeOfY
+                    .filter({ $0 > start.y })
+                    .map({ y in
+                        let point = Point(x: start.x, y: y)
+                        return amphipodsByPosition[point]
+                    })
                 
-                if whatsUnder == amphipod {
+                if whatsUnder.allSatisfy({ $0 == amphipod }) {
                     return
                 }
             }
             
-            let validPaths = paths(for: amphipod, startingAt: start)
+            let validPaths = paths(for: amphipod, startingAt: start, graph: graph)
                 .filter({ isValid($0) })
             result.append(contentsOf: validPaths)
         })
     }
     
-    private func paths(for amphipod: Amphipod, startingAt start: Point) -> [Path] {
-        if Graph.sideRooms.contains(start) {
-            return Graph.pathsToHallwayStopsByStart[start, default: []]
+    private func paths(for amphipod: Amphipod, startingAt start: Point, graph: Graph) -> [Path] {
+        if graph.sideRooms.contains(start) {
+            return graph.pathsToHallwayStopsByStart[start, default: []]
         }
         
-        if Graph.hallwayStops.contains(start) {
-            let sideRoomsForAmphipod = amphipod.sideRooms
-            let pathsToSideRooms = Graph.pathsToSideRoomsByStart[start, default: []]
+        if graph.hallwayStops.contains(start) {
+            let sideRoomsForAmphipod = amphipod.sideRooms(ofHeight: graph.heightOfSideRooms)
+            let pathsToSideRooms = graph.pathsToSideRoomsByStart[start, default: []]
             
             return pathsToSideRooms.filter({ path in
                 guard sideRoomsForAmphipod.contains(path.end) else {
                     return false
                 }
                 
-                if path.end.y == 2 {
-                    var pointUnderEnd = path.end
-                    pointUnderEnd.y += 1
-                    
-                    return amphipodsByPosition[pointUnderEnd] == amphipod
+                if path.end.y == graph.sideRoomRangeOfY.upperBound {
+                    return true
                 }
                 
-                return true
+                let whatsUnder: [Amphipod?] = graph.sideRoomRangeOfY
+                    .filter({ $0 > path.end.y })
+                    .map({ y in
+                        let point = Point(x: path.end.x, y: y)
+                        return amphipodsByPosition[point]
+                    })
+                
+                return whatsUnder.allSatisfy({ $0 == amphipod })
             })
         }
         
@@ -102,8 +109,8 @@ extension Fingerprint {
     }
 }
 
-extension Fingerprint: CustomStringConvertible {
-    var description: String {
+extension Fingerprint {
+    func description(using graph: Graph) -> String {
         let rangeOfX = 0 ... 12
         let rangeOfY = 0 ... 4
         
@@ -115,7 +122,7 @@ extension Fingerprint: CustomStringConvertible {
                     return amphipod.rawValue
                 }
                 
-                if Graph.hallway.contains(point) || Graph.sideRooms.contains(point) {
+                if graph.hallway.contains(point) || graph.sideRooms.contains(point) {
                     return "."
                 }
                 
@@ -131,26 +138,34 @@ extension Fingerprint: Hashable {}
 
 // MARK: - Graph
 
-enum Graph {
-    static let sideRoomsByAmphipod: [Amphipod: Set<Point>] = {
+class Graph {
+    let heightOfSideRooms: Int
+    
+    init(heightOfSideRooms: Int) {
+        self.heightOfSideRooms = heightOfSideRooms
+    }
+    
+    lazy var sideRoomRangeOfY: ClosedRange = 2 ... (2 + heightOfSideRooms - 1)
+    
+    lazy var sideRoomsByAmphipod: [Amphipod: Set<Point>] = {
         Amphipod.allCases.reduce(into: [:], { result, amphipod in
-            result[amphipod] = amphipod.sideRooms
+            result[amphipod] = amphipod.sideRooms(ofHeight: heightOfSideRooms)
         })
     }()
     
-    static let sideRooms: Set<Point> = Set(sideRoomsByAmphipod.values.flatMap({ $0 }))
+    lazy var sideRooms: Set<Point> = Set(sideRoomsByAmphipod.values.flatMap({ $0 }))
     
-    static let hallwayStops: Set<Point> = {
+    lazy var hallwayStops: Set<Point> = {
         let hallwayX = [1, 2, 4, 6, 8, 10, 11]
         return Set(hallwayX.map({ Point(x: $0, y: 1) }))
     }()
     
-    static let hallway: Set<Point> = {
+    lazy var hallway: Set<Point> = {
         let rangeOfX = 1 ... 11
         return Set(rangeOfX.map({ Point(x: $0, y: 1) }))
     }()
     
-    static let pathsToHallwayStopsByStart: [Point: [Path]] = {
+    lazy var pathsToHallwayStopsByStart: [Point: [Path]] = {
         product(sideRooms, hallwayStops).reduce(into: [:], { result, pair in
             let (start, end) = pair
             let path = Path(start: start, end: end)
@@ -158,7 +173,7 @@ enum Graph {
         })
     }()
     
-    static let pathsToSideRoomsByStart: [Point: [Path]] = {
+    lazy var pathsToSideRoomsByStart: [Point: [Path]] = {
         product(hallwayStops, sideRooms).reduce(into: [:], { result, pair in
             let (start, end) = pair
             let path = Path(start: start, end: end)
@@ -175,8 +190,8 @@ enum Amphipod: Character {
     case copper = "C"
     case desert = "D"
     
-    var sideRooms: Set<Point> {
-        let sideRoomRangeOfY = 2 ... 3
+    func sideRooms(ofHeight height: Int) -> Set<Point> {
+        let sideRoomRangeOfY = 2 ... (2 + height - 1)
         let x = sideRoomX
         
         return Set(sideRoomRangeOfY.map({ Point(x: x, y: $0) }))

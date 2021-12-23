@@ -14,35 +14,50 @@ struct Day23: DayCommand {
     var puzzleInputPath: String
     
     func run() throws {
-        let fingerprint = Fingerprint(rawValue: try readFile())
+        let rawValue = try readFile()
         
         printTitle("Part 1", level: .title1)
-        let leastEnergyToOrganizeAmphipods = part1(fingerprint: fingerprint)
+        let leastEnergyToOrganizeAmphipods = part1(rawValue: rawValue)
         print(
             "Least energy required to organize the amphipods:",
             leastEnergyToOrganizeAmphipods,
             terminator: "\n\n"
         )
+        
+        printTitle("Part 2", level: .title1)
+        let leastEnergyToOrganizeAmphipodsFromFullDiagram = part2(rawValue: rawValue)
+        print(
+            "Least energy required to organize the amphipods from the full diagram:",
+            leastEnergyToOrganizeAmphipodsFromFullDiagram
+        )
     }
     
-    func part1(fingerprint: Fingerprint) -> Int {
-        let result = dijkstra(fingerprint: fingerprint)
-        
-        var current = WeightedFingerprint(fingerprint: fingerprint, moves: [], cost: 0)
-        print(current.fingerprint, terminator: "\n\n")
-        
-        for move in result.moves {
-            current = current.applying(move)
-            print(current.fingerprint, terminator: "\n\n")
-        }
+    func part1(rawValue: String) -> Int {
+        let fingerprint = Fingerprint(rawValue: rawValue)
+        let graph = Graph(heightOfSideRooms: 2)
+        let result = dijkstra(fingerprint: fingerprint, graph: graph)
         
         return result.cost
     }
     
-    func dijkstra(fingerprint: Fingerprint) -> WeightedFingerprint {
+    func part2(rawValue: String) -> Int {
+        var lines = rawValue.components(separatedBy: .newlines)
+        lines.insert("  #D#C#B#A#  ", at: 3)
+        lines.insert("  #D#B#A#C#  ", at: 4)
+        let rawValue = lines.joined(separator: "\n")
+        
+        let fingerprint = Fingerprint(rawValue: rawValue)
+        let graph = Graph(heightOfSideRooms: 4)
+        
+        let result = dijkstra(fingerprint: fingerprint, graph: graph)
+        return result.cost
+    }
+    
+    func dijkstra(fingerprint: Fingerprint, graph: Graph) -> WeightedFingerprint {
+        let target = Fingerprint.target(ofHeight: graph.heightOfSideRooms)
+        
         let initial = WeightedFingerprint(
             fingerprint: fingerprint,
-            moves: [],
             cost: 0
         )
         var frontier = Heap<WeightedFingerprint>(
@@ -53,13 +68,13 @@ struct Day23: DayCommand {
         var minimumCostByFingerprint = [initial.fingerprint: initial.cost]
         
         while let leastCostlyFingerprint = frontier.remove() {
-            if leastCostlyFingerprint.fingerprint == Fingerprint.target {
+            if leastCostlyFingerprint.fingerprint == target {
                 return leastCostlyFingerprint
             }
             
             visited.insert(leastCostlyFingerprint.fingerprint)
             
-            for path in leastCostlyFingerprint.fingerprint.possiblePaths() {
+            for path in leastCostlyFingerprint.fingerprint.possiblePaths(using: graph) {
                 let newFingerprint = leastCostlyFingerprint.applying(path)
                 
                 if visited.contains(newFingerprint.fingerprint) {
@@ -80,7 +95,6 @@ struct Day23: DayCommand {
 
 struct WeightedFingerprint {
     let fingerprint: Fingerprint
-    let moves: [Path]
     let cost: Int
     
     func applying(_ path: Path) -> WeightedFingerprint {
@@ -94,7 +108,6 @@ struct WeightedFingerprint {
         
         return WeightedFingerprint(
             fingerprint: newFingerprint,
-            moves: moves + [path],
             cost: newCost
         )
     }
