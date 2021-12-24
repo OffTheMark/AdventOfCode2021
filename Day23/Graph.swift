@@ -24,7 +24,7 @@ struct Fingerprint {
         return Fingerprint(amphipodsByPosition: amphipodsByPosition)
     }
     
-    func isValid(_ path: Path) -> Bool {
+    func isPathClear(_ path: Path) -> Bool {
         let pointsOfPathExceptStart = path.points().subtracting([path.start])
         
         return pointsOfPathExceptStart.allSatisfy({ amphipodsByPosition[$0] == nil })
@@ -34,39 +34,49 @@ struct Fingerprint {
         return amphipodsByPosition.reduce(into: [], { result, pair in
             let (start, amphipod) = pair
             
+            // If the possible path starts in a side room and that side room is the destination for the amphipod...
             if amphipod.sideRooms(ofHeight: graph.heightOfSideRooms).contains(start) {
                 if start.y == graph.sideRoomRangeOfY.upperBound {
+                    // ... if the amphipod is at the bottom of the destination side room, then the amphipod does not
+                    // need to move.
                     return
                 }
                 
-                let whatsUnder: [Amphipod?] = graph.sideRoomRangeOfY
+                let whatsUnderneath: [Amphipod?] = graph.sideRoomRangeOfY
                     .filter({ $0 > start.y })
                     .map({ y in
                         let point = Point(x: start.x, y: y)
                         return amphipodsByPosition[point]
                     })
                 
-                if whatsUnder.allSatisfy({ $0 == amphipod }) {
+                // ... if the amphipod is not at the bottom of the side room and the sideroom already contains other
+                // correct amphipods underneath, then the amphipod does not need to move.
+                if whatsUnderneath.allSatisfy({ $0 == amphipod }) {
                     return
                 }
             }
             
+            // Valid paths are all paths starting from the current position that obey the rules and are not blocked by
+            // other amphipods.
             let validPaths = paths(for: amphipod, startingAt: start, graph: graph)
-                .filter({ isValid($0) })
+                .filter({ isPathClear($0) })
             result.append(contentsOf: validPaths)
         })
     }
     
     private func paths(for amphipod: Amphipod, startingAt start: Point, graph: Graph) -> [Path] {
+        // If we start in a side room, we can only move to a hallway stop.
         if graph.sideRooms.contains(start) {
             return graph.pathsToHallwayStopsByStart[start, default: []]
         }
         
+        // If we start in a hallway stop, we can only move to a side room.
         if graph.hallwayStops.contains(start) {
             let sideRoomsForAmphipod = amphipod.sideRooms(ofHeight: graph.heightOfSideRooms)
             let pathsToSideRooms = graph.pathsToSideRoomsByStart[start, default: []]
             
             return pathsToSideRooms.filter({ path in
+                // That side room has to be the correct destination for the amphipod...
                 guard sideRoomsForAmphipod.contains(path.end) else {
                     return false
                 }
@@ -75,14 +85,15 @@ struct Fingerprint {
                     return true
                 }
                 
-                let whatsUnder: [Amphipod?] = graph.sideRoomRangeOfY
+                // ... and that sideroom must contain no amphipods which do not also have that room as a destination.
+                let whatsUnderneath: [Amphipod?] = graph.sideRoomRangeOfY
                     .filter({ $0 > path.end.y })
                     .map({ y in
                         let point = Point(x: path.end.x, y: y)
                         return amphipodsByPosition[point]
                     })
                 
-                return whatsUnder.allSatisfy({ $0 == amphipod })
+                return whatsUnderneath.allSatisfy({ $0 == amphipod })
             })
         }
         
@@ -112,7 +123,7 @@ extension Fingerprint {
 extension Fingerprint {
     func description(using graph: Graph) -> String {
         let rangeOfX = 0 ... 12
-        let rangeOfY = 0 ... 4
+        let rangeOfY = 0 ... (graph.heightOfSideRooms + 2)
         
         let lines: [String] = rangeOfY.map({ y in
             let line = String(rangeOfX.map({ x -> Character in

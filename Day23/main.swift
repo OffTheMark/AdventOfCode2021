@@ -75,16 +75,16 @@ struct Day23: DayCommand {
             visited.insert(leastCostlyFingerprint.fingerprint)
             
             for path in leastCostlyFingerprint.fingerprint.possiblePaths(using: graph) {
-                let newFingerprint = leastCostlyFingerprint.applying(path)
+                let neighbor = leastCostlyFingerprint.applying(path)
                 
-                if visited.contains(newFingerprint.fingerprint) {
+                if visited.contains(neighbor.fingerprint) {
                     continue
                 }
                 
-                if newFingerprint.cost < minimumCostByFingerprint[newFingerprint.fingerprint, default: Int.max] {
-                    minimumCostByFingerprint[newFingerprint.fingerprint] = newFingerprint.cost
+                if neighbor.cost < minimumCostByFingerprint[neighbor.fingerprint, default: Int.max] {
+                    minimumCostByFingerprint[neighbor.fingerprint] = neighbor.cost
                     
-                    frontier.insert(newFingerprint)
+                    frontier.insert(neighbor)
                 }
             }
         }

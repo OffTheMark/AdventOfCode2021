@@ -48,7 +48,7 @@
 		34AE9806277373CE0088D43C /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 34AE9805277373CE0088D43C /* Algorithms */; };
 		34AE98112774F45B0088D43C /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AE98102774F45B0088D43C /* main.swift */; };
 		34AE98162774F4610088D43C /* AdventOfCodeUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = 34AE98152774F4610088D43C /* AdventOfCodeUtilities */; };
-		34AE98192774F5060088D43C /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AE98182774F5060088D43C /* Grid.swift */; };
+		34AE98192774F5060088D43C /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AE98182774F5060088D43C /* Graph.swift */; };
 		34AE981B2774F9620088D43C /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 34AE981A2774F9620088D43C /* Algorithms */; };
 		34AE981D2775235A0088D43C /* Heap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AE981C2775235A0088D43C /* Heap.swift */; };
 		34C9DA07274C4EC400ACB703 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C9DA06274C4EC400ACB703 /* main.swift */; };
@@ -365,7 +365,7 @@
 		34AE980E2774F45B0088D43C /* Day23 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day23; sourceTree = BUILT_PRODUCTS_DIR; };
 		34AE98102774F45B0088D43C /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		34AE98172774F4B40088D43C /* test_input.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = test_input.txt; sourceTree = "<group>"; };
-		34AE98182774F5060088D43C /* Grid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
+		34AE98182774F5060088D43C /* Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
 		34AE981C2775235A0088D43C /* Heap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Heap.swift; sourceTree = "<group>"; };
 		34AE981E27753A3F0088D43C /* puzzle_input.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = puzzle_input.txt; sourceTree = "<group>"; };
 		34C9DA04274C4EC400ACB703 /* Day1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day1; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -749,7 +749,7 @@
 			isa = PBXGroup;
 			children = (
 				34AE98102774F45B0088D43C /* main.swift */,
-				34AE98182774F5060088D43C /* Grid.swift */,
+				34AE98182774F5060088D43C /* Graph.swift */,
 				34AE981C2775235A0088D43C /* Heap.swift */,
 				34AE98172774F4B40088D43C /* test_input.txt */,
 				34AE981E27753A3F0088D43C /* puzzle_input.txt */,
@@ -1658,7 +1658,7 @@
 			files = (
 				34AE981D2775235A0088D43C /* Heap.swift in Sources */,
 				34AE98112774F45B0088D43C /* main.swift in Sources */,
-				34AE98192774F5060088D43C /* Grid.swift in Sources */,
+				34AE98192774F5060088D43C /* Graph.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
