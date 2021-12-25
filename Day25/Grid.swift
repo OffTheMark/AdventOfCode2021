@@ -97,7 +97,7 @@ extension Grid: CustomStringConvertible {
         let rangeOfY = 0 ..< size.height
         
         let lines: [String] = rangeOfY.map({ y in
-            let line = String(rangeOfX.map({ x -> Character in
+            let characters: [Character] = rangeOfX.map({ x in
                 let point = Point(x: x, y: y)
                 
                 if let cucumber = cucumbersByPoint[point] {
@@ -106,8 +106,8 @@ extension Grid: CustomStringConvertible {
                 else {
                     return "."
                 }
-            }))
-            return line
+            })
+            return String(characters)
         })
         return lines.joined(separator: "\n")
     }
