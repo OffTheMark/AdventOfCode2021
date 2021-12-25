@@ -17,15 +17,16 @@ struct Day25: DayCommand {
         let grid = Grid(rawValue: try readFile())
         
         printTitle("Part 1", level: .title1)
-        let firstStepOnWhichNoCucumbersMove = part1(grid: grid)
-        print("First step on which no sea cucumbers move:", firstStepOnWhichNoCucumbersMove, terminator: "\n\n")
+        let result = part1(grid: grid)
+        print("First step on which no sea cucumbers move:", result.numberOfSteps, terminator: "\n\n")
+        print(result.grid)
     }
     
-    func part1(grid: Grid) -> Int {
+    func part1(grid: Grid) -> (numberOfSteps: Int, grid: Grid) {
         let steps = 1...
         var grid = grid
         
-        return steps.first(where: { _ in
+        let numberOfSteps = steps.first(where: { _ in
             let movesForEastFacing = grid.movesForEastFacingCucumbers()
             grid.apply(movesForEastFacing)
             
@@ -34,6 +35,8 @@ struct Day25: DayCommand {
             
             return movesForEastFacing.isEmpty && movesForSouthFacing.isEmpty
         })!
+        
+        return (numberOfSteps, grid)
     }
 }
 

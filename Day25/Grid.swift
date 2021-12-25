@@ -91,6 +91,28 @@ extension Grid {
     }
 }
 
+extension Grid: CustomStringConvertible {
+    var description: String {
+        let rangeOfX = 0 ..< size.width
+        let rangeOfY = 0 ..< size.height
+        
+        let lines: [String] = rangeOfY.map({ y in
+            let line = String(rangeOfX.map({ x -> Character in
+                let point = Point(x: x, y: y)
+                
+                if let cucumber = cucumbersByPoint[point] {
+                    return cucumber.rawValue
+                }
+                else {
+                    return "."
+                }
+            }))
+            return line
+        })
+        return lines.joined(separator: "\n")
+    }
+}
+
 enum SeaCucumber: Character {
     case east = ">"
     case south = "v"
