@@ -88,3 +88,7 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+Day*/test_input.txt
+Day*/test_input*.txt
+Day*/puzzle_input.txt
